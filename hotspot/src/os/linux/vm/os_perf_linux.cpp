@@ -65,6 +65,9 @@
 #include <pthread.h>
 #include <limits.h>
 #include <ifaddrs.h>
+#ifdef __ANDROID__
+#include "ifaddrs.inc.h"
+#endif
 #include <fcntl.h>
 
 /**

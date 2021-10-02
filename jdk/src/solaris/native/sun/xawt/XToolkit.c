@@ -27,7 +27,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
-#ifdef __linux__
+#if defined(__linux__) && !defined(__ANDROID__)
 #include <execinfo.h>
 #endif
 
@@ -799,6 +799,7 @@ JNIEXPORT jstring JNICALL Java_sun_awt_X11_XToolkit_getEnv
 #ifdef __linux__
 void print_stack(void)
 {
+#ifndef __ANDROID__
   void *array[10];
   size_t size;
   char **strings;
@@ -813,6 +814,7 @@ void print_stack(void)
      fprintf (stderr, "%s\n", strings[i]);
 
   free (strings);
+#endif
 }
 #endif
 

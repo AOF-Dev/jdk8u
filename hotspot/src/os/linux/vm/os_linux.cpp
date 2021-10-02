@@ -95,7 +95,55 @@
 # include <string.h>
 # include <syscall.h>
 # include <sys/sysinfo.h>
+# ifndef __ANDROID__
 # include <gnu/libc-version.h>
+# else
+// Copy from glibc 2.31
+
+# ifndef _CS_GNU_LIBC_VERSION
+# define _CS_GNU_LIBC_VERSION 2
+# endif
+# ifndef _CS_GNU_LIBPTHREAD_VERSION
+# define _CS_GNU_LIBPTHREAD_VERSION 3
+# endif
+
+static size_t confstr(int name, char *buf, size_t len) {
+  const char *string = "";
+  size_t string_len = 1;
+
+  switch (name) {
+    case _CS_GNU_LIBC_VERSION:
+      string = "bionic libc android-21";
+      string_len = sizeof("bionic libc android-21");
+      break;
+
+    case _CS_GNU_LIBPTHREAD_VERSION:
+      string = "bionic libc android-21 NPTL";
+      string_len = sizeof("bionic libc android-21 NPTL");
+      break;
+    default:
+      return 0;
+  }
+
+  if (len > 0 && buf != NULL) {
+    if (string_len <= len) {
+      memcpy (buf, string, string_len);
+    } else {
+      memcpy (buf, string, len - 1);
+      buf[len - 1] = '\0';
+    }
+  }
+  return string_len;
+}
+
+static const char* gnu_get_libc_version() {
+  return "0";
+}
+
+static const char* gnu_get_libc_release() {
+  return "0";
+}
+# endif // __ANDROID__
 # include <sys/ipc.h>
 # include <sys/shm.h>
 # include <link.h>
@@ -1380,9 +1428,9 @@ jlong os::javaTimeMillis() {
 void os::Linux::clock_init() {
   // we do dlopen's in this particular order due to bug in linux
   // dynamical loader (see 6348968) leading to crash on exit
-  void* handle = dlopen("librt.so.1", RTLD_LAZY);
+  void* handle = dlopen("libc.so.6", RTLD_LAZY);
   if (handle == NULL) {
-    handle = dlopen("librt.so", RTLD_LAZY);
+    handle = dlopen("libc.so", RTLD_LAZY);
   }
 
   if (handle) {
@@ -2977,7 +3025,11 @@ extern "C" JNIEXPORT int fork1() { return fork(); }
 // Handle request to load libnuma symbol version 1.1 (API v1). If it fails
 // load symbol from base version instead.
 void* os::Linux::libnuma_dlsym(void* handle, const char *name) {
+#ifndef __ANDROID__
   void *f = dlvsym(handle, name, "libnuma_1.1");
+#else
+  void *f = NULL;
+#endif
   if (f == NULL) {
     f = dlsym(handle, name);
   }
@@ -2987,7 +3039,11 @@ void* os::Linux::libnuma_dlsym(void* handle, const char *name) {
 // Handle request to load libnuma symbol version 1.2 (API v2) only.
 // Return NULL if the symbol is not defined in this particular version.
 void* os::Linux::libnuma_v2_dlsym(void* handle, const char* name) {
+#ifndef __ANDROID__
   return dlvsym(handle, name, "libnuma_1.2");
+#else
+  return NULL;
+#endif
 }
 
 bool os::Linux::libnuma_init() {
@@ -5867,7 +5923,11 @@ bool os::is_thread_cpu_time_supported() {
 // Linux doesn't yet have a (official) notion of processor sets,
 // so just return the system wide load average.
 int os::loadavg(double loadavg[], int nelem) {
+#ifndef __ANDROID__
   return ::getloadavg(loadavg, nelem);
+#else
+  return -1;
+#endif
 }
 
 void os::pause() {

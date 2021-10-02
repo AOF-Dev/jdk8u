@@ -154,6 +154,9 @@ struct siglabel siglabels[] = {
 #ifdef SIGSTKFLT
   "STKFLT",     SIGSTKFLT,      /* Stack fault.  */
 #endif
+#ifndef SIGCLD
+#define SIGCLD SIGCHLD
+#endif
   "CLD",        SIGCLD,         /* Same as SIGCHLD (System V).  */
   "CHLD",       SIGCHLD,        /* Child status has changed (POSIX).  */
   "CONT",       SIGCONT,        /* Continue (POSIX).  */

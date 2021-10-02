@@ -621,7 +621,7 @@ ifeq ($(findstring $(OPENJDK_TARGET_OS),windows macosx),)
 
     ifeq ($(OPENJDK_TARGET_OS), linux)
       # To match old build, add this to LDFLAGS instead of suffix.
-      LIBAWT_XAWT_LDFLAGS += -lpthread
+      LIBAWT_XAWT_LDFLAGS += -pthread
     endif
 
     $(eval $(call SetupNativeCompilation,BUILD_LIBAWT_XAWT, \
@@ -924,7 +924,7 @@ $(eval $(call SetupNativeCompilation,BUILD_LIBFONTMANAGER, \
         $(subst -Wl$(COMMA)-z$(COMMA)defs,,$(LDFLAGS_JDKLIB))) $(LDFLAGS_CXX_JDK) \
         $(call SET_SHARED_LIBRARY_ORIGIN), \
     LDFLAGS_SUFFIX := $(BUILD_LIBFONTMANAGER_FONTLIB), \
-    LDFLAGS_SUFFIX_linux := -lawt $(LIBM) $(LIBCXX) -ljava -ljvm -lc, \
+    LDFLAGS_SUFFIX_linux := -lawt -lawt_xawt $(LIBM) $(LIBCXX) -ljava -ljvm -lc, \
     LDFLAGS_SUFFIX_solaris := -lawt -lawt_headless -lc $(LIBM) $(LIBCXX) -ljava -ljvm, \
     LDFLAGS_SUFFIX_aix := -lawt -lawt_headless $(LIBM) $(LIBCXX) -ljava -ljvm,\
     LDFLAGS_SUFFIX_macosx := -lawt $(LIBM) $(LIBCXX) -undefined dynamic_lookup \
@@ -1195,7 +1195,7 @@ ifndef BUILD_HEADLESS_ONLY
   else ifeq ($(OPENJDK_TARGET_OS), windows)
     LIBSPLASHSCREEN_LDFLAGS_SUFFIX += kernel32.lib user32.lib gdi32.lib delayimp.lib -DELAYLOAD:user32.dll
   else
-    LIBSPLASHSCREEN_LDFLAGS_SUFFIX += $(X_LIBS) -lX11 -lXext $(LIBM) -lpthread
+    LIBSPLASHSCREEN_LDFLAGS_SUFFIX += $(X_LIBS) -lX11 -lXext $(LIBM) -pthread
   endif
 
   $(eval $(call SetupNativeCompilation,LIBSPLASHSCREEN, \
@@ -1211,6 +1211,7 @@ ifndef BUILD_HEADLESS_ONLY
           $(call SET_SHARED_LIBRARY_ORIGIN), \
       LDFLAGS_SUFFIX := $(LIBSPLASHSCREEN_LDFLAGS_SUFFIX) $(LIBZ) $(GIFLIB_LDFLAGS), \
       LDFLAGS_SUFFIX_solaris := -lc, \
+      LDFLAGS_SUFFIX_linux := -liconv, \
       VERSIONINFO_RESOURCE := $(JDK_TOPDIR)/src/windows/resource/version.rc, \
       RC_FLAGS := $(RC_FLAGS) \
           -D "JDK_FNAME=splashscreen.dll" \

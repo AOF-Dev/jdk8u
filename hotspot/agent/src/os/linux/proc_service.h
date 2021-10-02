@@ -26,7 +26,9 @@
 #define _PROC_SERVICE_H_
 
 #include <stdio.h>
-#include <thread_db.h>
+#include <sys/procfs.h>
+
+struct ps_prochandle;
 
 // Linux does not have the proc service library, though it does provide the
 // thread_db library which can be used to manipulate threads without having

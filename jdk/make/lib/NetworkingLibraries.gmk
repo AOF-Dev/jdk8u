@@ -72,7 +72,7 @@ $(eval $(call SetupNativeCompilation,BUILD_LIBNET, \
         $(call SET_SHARED_LIBRARY_ORIGIN), \
     LDFLAGS_SUFFIX_macosx := -ljvm -ljava, \
     LDFLAGS_SUFFIX_solaris := -ljvm -ljava -lnsl -lsocket $(LIBDL) -lc, \
-    LDFLAGS_SUFFIX_linux := $(LIBDL) -ljvm -lpthread -ljava, \
+    LDFLAGS_SUFFIX_linux := $(LIBDL) -ljvm -pthread -ljava, \
     LDFLAGS_SUFFIX_aix := $(LIBDL) -ljvm -ljava,\
     LDFLAGS_SUFFIX_windows := ws2_32.lib jvm.lib secur32.lib iphlpapi.lib \
         delayimp.lib $(WIN_JAVA_LIB) advapi32.lib \

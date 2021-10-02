@@ -445,7 +445,7 @@ $(eval $(call SetupNativeCompilation,BUILD_LIBJLI, \
     LDFLAGS_solaris := $(call SET_SHARED_LIBRARY_ORIGIN,/..), \
     LDFLAGS_macosx := -framework Cocoa -framework Security -framework ApplicationServices -mmacosx-version-min=$(MACOSX_VERSION_MIN), \
     LDFLAGS_SUFFIX_solaris := $(LIBZ) $(LIBDL) -lc, \
-    LDFLAGS_SUFFIX_linux := $(LIBZ) $(LIBDL) -lc -lpthread, \
+    LDFLAGS_SUFFIX_linux := $(LIBZ) $(LIBDL) -lc -pthread, \
     LDFLAGS_SUFFIX_aix := $(LIBZ) $(LIBDL),\
     LDFLAGS_SUFFIX_macosx := $(LIBZ), \
     LDFLAGS_SUFFIX_windows := \
@@ -547,6 +547,7 @@ $(eval $(call SetupNativeCompilation,BUILD_LIBNPT, \
     LDFLAGS_macosx := -liconv, \
     LDFLAGS_SUFFIX_windows := -export:nptInitialize -export:nptTerminate, \
     LDFLAGS_SUFFIX_solaris := -lc, \
+    LDFLAGS_SUFFIX_linux := -liconv, \
     VERSIONINFO_RESOURCE := $(JDK_TOPDIR)/src/windows/resource/version.rc, \
     RC_FLAGS := $(RC_FLAGS) \
         -D "JDK_FNAME=npt.dll" \
